@@ -1,15 +1,14 @@
 # ccusage Status Line for Claude Code
 
-Custom status line for Claude Code that displays active block information from ccusage.
-
-Claude Code의 활성 블록 정보를 표시하는 커스텀 상태줄입니다.
+Claude Code의 활성 블록 정보를 표시하는 커스텀 상태줄입니다.  
+해당 코드는 Claude Pro 요금제를 사용하는 기준으로 작성되었습니다.
 
 ## Features / 기능
 
-- ⏰ **Time Tracking**: Block start/end time, elapsed and remaining time
-- 🔥 **Token Usage**: Token count and percentage
-- 🟢🟠🔴 **Usage Alerts**: Color-coded indicators (green/orange/red)
-- 💰 **Cost**: Real-time cost tracking
+- ⏰ **Time Tracking**: 세션블록의 시작시간, 종료시간, 사용시간, 남은시간을 출력
+- 🔥 **Token Usage**: 사용 토큰 수와 퍼센트수치를 표기
+- 🟢🟠🔴 **Usage Alerts**: 토큰사용량 별 경고 인디케이터 (green/orange/red)
+- 💰 **Cost**: 실시간 사용 비용
 
 ## Prerequisites / 필수 요구사항
 
@@ -18,26 +17,44 @@ Claude Code의 활성 블록 정보를 표시하는 커스텀 상태줄입니다
 
 ## Installation / 설치
 
-Clone the repository:
+### 1. Repository 복사
 
 ```bash
 git clone https://github.com/MilkLotion/ccusage_status_line.git
 cd ccusage_status_line
 ```
 
-Copy `statusline.py` to your `.claude` directory:
+### 2. `statusline.py`를 `.claude` 디렉토리로 복사/이동
+
+#### Windows (PowerShell)
 
 ```bash
-# Linux/Mac
-cp statusline.py ~/.claude/
-
-# Windows (PowerShell)
 Copy-Item statusline.py "$env:USERPROFILE\.claude\"
+```
+
+#### Linux/Mac
+
+```bash
+cp statusline.py ~/.claude/
 ```
 
 ## Configuration / 설정
 
 Add to your Claude Code settings file (`~/.claude/settings.json`):
+
+### Windows
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "python C:\\Users\\<username>\\.claude\\statusline.py",
+    "padding": 0
+  }
+}
+```
+
+### Linux/Mac
 
 ```json
 {
@@ -49,22 +66,20 @@ Add to your Claude Code settings file (`~/.claude/settings.json`):
 }
 ```
 
-**Windows**: Use `python C:\\Users\\<username>\\.claude\\statusline.py`
-
-Restart Claude Code to apply changes.
+Claude Code를 재시작 하고 동작 시에 해당 출력을 확인할 수 있습니다.
 
 ## Output Format / 출력 형식
 
 ```
-🟢  2025-11-14 12:00 AM ~ 5:00 AM | ⏱️ 1h 1m | ⏳ 3h 59m | 🔥 7,275,167 tokens (33.4%) | 💰 $4.60
+Session Block Info  🟢  2025-11-14 12:00 AM ~ 5:00 AM | ⏱️ 1h 1m | ⏳ 3h 59m | 🔥 7,275,167 tokens (33.4%) | 💰 $4.60
 ```
 
-- 🟢/🟠/🔴 Usage indicator (≤60% / 60-80% / >80%)
-- Date and time range (start ~ end)
-- ⏱️ Elapsed time
-- ⏳ Remaining time (5 hours total)
-- 🔥 Token count with percentage
-- 💰 Cost
+- 🟢/🟠/🔴 사용량 인디케이터 (≤60% / 60-80% / >80%)
+- 시작시간 ~ 종료시간
+- ⏱️ 사용시간
+- ⏳ 남은시간(총 5 시간)
+- 🔥 토큰 사용량 (% 수치)
+- 💰 사용 코스트
 
 ## License
 

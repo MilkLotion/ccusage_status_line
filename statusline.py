@@ -179,7 +179,7 @@ def format_statusline(data):
 
     if time_info:
         # Format: 🟢  날짜 시작 ~ 종료 | Elapsed 시간 | Remaining 시간 | 토큰 (%) | 달러
-        return (f"Session Block {usage_indicator}  {time_info['start_time']} ~ {time_info['end_time']} | "
+        return (f"Session Block Info  {usage_indicator}  {time_info['start_time']} ~ {time_info['end_time']} | "
                 f"⏱️ {time_info['elapsed']} | ⏳ {time_info['remaining']} | "
                 f"🔥 {data['tokens']} tokens ({percentage}) | 💰 {data['cost']}")
     else:

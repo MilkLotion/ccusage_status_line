@@ -85,11 +85,13 @@ Restart Claude Code to apply the changes.
 ## Output Format / 출력 형식
 
 ```
-🔥 1,938,844 tokens (8.9%) | 💰 $1.50
+12:00 AM ~ 5:00 AM | ⏱️ 0h 52m | ⏳ 4h 8m | 🔥 4,231,281 tokens | 💰 $2.84
 ```
 
+- **[start time] ~ [end time]**: Active block time range / 활성 블록 시간 범위
+- **⏱️ [elapsed]**: Elapsed time in current block / 현재 블록에서 경과한 시간
+- **⏳ [remaining]**: Remaining time in current block / 현재 블록의 남은 시간
 - **🔥 [tokens] tokens**: Total tokens used in active block / 활성 블록의 총 토큰 사용량
-- **([percentage])**: Percentage of token limit / 토큰 한도의 사용률
 - **💰 [cost]**: Estimated cost for active block / 활성 블록의 예상 비용
 
 When no active block is found:
@@ -103,8 +105,13 @@ When no active block is found:
 
 1. Runs `ccusage blocks` command / `ccusage blocks` 명령어 실행
 2. Parses output to find ACTIVE block / 출력에서 ACTIVE 블록 찾기
-3. Extracts tokens, percentage, and cost / 토큰, 퍼센티지, 비용 추출
-4. Formats and displays in status line / 상태줄에 포맷팅하여 표시
+3. Extracts time information (start, elapsed, remaining) / 시간 정보 추출 (시작, 경과, 남은 시간)
+4. Extracts tokens and cost / 토큰 및 비용 추출
+5. Formats and displays in status line / 상태줄에 포맷팅하여 표시
+
+**Time Calculation / 시간 계산:**
+- Block duration: 5 hours (Claude's billing block) / 블록 지속 시간: 5시간 (Claude의 빌링 블록)
+- Remaining time = 5 hours - Elapsed time / 남은 시간 = 5시간 - 경과 시간
 
 ## Customization / 커스터마이징
 
@@ -117,9 +124,26 @@ def format_statusline(data):
     if not data:
         return "⚠️ No active block"
 
-    # Customize this line
-    return f"🔥 {data['tokens']} tokens ({data['percentage']}) | 💰 {data['cost']}"
+    time_info = data.get('time_info')
+
+    if time_info:
+        # Customize this format
+        return (f"{time_info['start_time']} ~ {time_info['end_time']} | "
+                f"⏱️ {time_info['elapsed']} | ⏳ {time_info['remaining']} | "
+                f"🔥 {data['tokens']} tokens | 💰 {data['cost']}")
+    else:
+        # Fallback format if time info is not available
+        return f"🔥 {data['tokens']} tokens ({data['percentage']}) | 💰 {data['cost']}"
 ```
+
+**Available data fields / 사용 가능한 데이터 필드:**
+- `time_info['start_time']`: Block start time / 블록 시작 시간
+- `time_info['end_time']`: Block end time / 블록 종료 시간
+- `time_info['elapsed']`: Elapsed time / 경과 시간
+- `time_info['remaining']`: Remaining time / 남은 시간
+- `data['tokens']`: Token count / 토큰 수
+- `data['percentage']`: Usage percentage / 사용률
+- `data['cost']`: Estimated cost / 예상 비용
 
 ## Troubleshooting / 문제 해결
 

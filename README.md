@@ -6,10 +6,11 @@ Claude Code의 활성 블록 정보를 표시하는 커스텀 상태줄입니다
 
 ## Features / 기능
 
-- 🔥 **Token Usage**: Display current active block token usage
-- 📊 **Percentage**: Show percentage of token limit used
-- 💰 **Cost**: Real-time cost tracking for active session
-- ⚡ **Fast**: Optimized parsing for quick status updates
+- ⏰ **Time Tracking**: Display block start/end time, elapsed and remaining time / 블록 시작/종료 시간, 경과 및 남은 시간 표시
+- 🔥 **Token Usage**: Display current active block token usage with percentage / 활성 블록 토큰 사용량 및 퍼센티지 표시
+- 🟢🟠🔴 **Usage Alerts**: Color-coded indicators for usage levels (green/orange/red) / 사용량 수준별 색상 표시 (초록/주황/빨강)
+- 💰 **Cost**: Real-time cost tracking for active session / 실시간 비용 추적
+- ⚡ **Fast**: Optimized parsing for quick status updates / 빠른 상태 업데이트를 위한 최적화된 파싱
 
 ## Prerequisites / 필수 요구사항
 
@@ -85,13 +86,17 @@ Restart Claude Code to apply the changes.
 ## Output Format / 출력 형식
 
 ```
-12:00 AM ~ 5:00 AM | ⏱️ 0h 52m | ⏳ 4h 8m | 🔥 4,231,281 tokens | 💰 $2.84
+12:00 AM ~ 5:00 AM | ⏱️ 0h 56m | ⏳ 4h 4m | 🔥 5,580,929 tokens (25.6%) 🟢 | 💰 $3.61
 ```
 
 - **[start time] ~ [end time]**: Active block time range / 활성 블록 시간 범위
 - **⏱️ [elapsed]**: Elapsed time in current block / 현재 블록에서 경과한 시간
 - **⏳ [remaining]**: Remaining time in current block / 현재 블록의 남은 시간
-- **🔥 [tokens] tokens**: Total tokens used in active block / 활성 블록의 총 토큰 사용량
+- **🔥 [tokens] tokens ([%])**: Total tokens used in active block with percentage / 활성 블록의 총 토큰 사용량 및 사용률
+- **Usage Indicator / 사용량 표시기**:
+  - 🟢 **Green circle**: ≤ 60% usage (safe zone) / 60% 이하 (안전 구역)
+  - 🟠 **Orange circle**: 60-80% usage (warning zone) / 60-80% (경고 구역)
+  - 🔴 **Red circle**: > 80% usage (critical zone) / 80% 초과 (위험 구역)
 - **💰 [cost]**: Estimated cost for active block / 활성 블록의 예상 비용
 
 When no active block is found:
@@ -144,6 +149,28 @@ def format_statusline(data):
 - `data['tokens']`: Token count / 토큰 수
 - `data['percentage']`: Usage percentage / 사용률
 - `data['cost']`: Estimated cost / 예상 비용
+- `get_usage_indicator(percentage)`: Color indicator based on usage / 사용량 기반 색상 표시
+
+**Customizing usage thresholds / 사용량 임계값 커스터마이징:**
+
+Edit the `get_usage_indicator()` function to customize the color thresholds:
+`get_usage_indicator()` 함수를 편집하여 색상 임계값을 커스터마이징할 수 있습니다:
+
+```python
+def get_usage_indicator(percentage_str):
+    """Get colored circle indicator based on usage percentage"""
+    try:
+        percentage = float(percentage_str.rstrip('%'))
+
+        if percentage <= 60:  # Change threshold / 임계값 변경
+            return "🟢"
+        elif percentage <= 80:  # Change threshold / 임계값 변경
+            return "🟠"
+        else:
+            return "🔴"
+    except (ValueError, AttributeError):
+        return "⚪"  # Default white circle if parsing fails
+```
 
 ## Troubleshooting / 문제 해결
 

@@ -144,21 +144,38 @@ def parse_active_block():
     except Exception:
         return None
 
+def get_usage_indicator(percentage_str):
+    """Get colored circle indicator based on usage percentage"""
+    try:
+        # Extract numeric value from percentage string (e.g., "18.6%" -> 18.6)
+        percentage = float(percentage_str.rstrip('%'))
+
+        if percentage <= 60:
+            return "🟢"
+        elif percentage <= 80:
+            return "🟠"
+        else:
+            return "🔴"
+    except (ValueError, AttributeError):
+        return "⚪"  # Default white circle if parsing fails
+
 def format_statusline(data):
     """Format data for statusline display"""
     if not data:
         return "⚠️ No active block"
 
     time_info = data.get('time_info')
+    percentage = data.get('percentage', 'N/A')
+    usage_indicator = get_usage_indicator(percentage)
 
     if time_info:
-        # Format: 시작 ~ 종료 | Elapsed 시간 | Remaining 시간 | 토큰 | 달러
+        # Format: 시작 ~ 종료 | Elapsed 시간 | Remaining 시간 | 토큰 (%) 🟢 | 달러
         return (f"{time_info['start_time']} ~ {time_info['end_time']} | "
                 f"⏱️ {time_info['elapsed']} | ⏳ {time_info['remaining']} | "
-                f"🔥 {data['tokens']} tokens | 💰 {data['cost']}")
+                f"🔥 {data['tokens']} tokens ({percentage}) {usage_indicator} | 💰 {data['cost']}")
     else:
         # Fallback format if time info is not available
-        return f"🔥 {data['tokens']} tokens ({data['percentage']}) | 💰 {data['cost']}"
+        return f"🔥 {data['tokens']} tokens ({percentage}) {usage_indicator} | 💰 {data['cost']}"
 
 if __name__ == "__main__":
     data = parse_active_block()

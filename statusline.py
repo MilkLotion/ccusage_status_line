@@ -21,6 +21,15 @@ def parse_time_info(block_start_str):
     """Parse time information from block start string"""
     # Format: "2025-11-14, 12:00:00 a.m. (0h 52m" or "2025-11-14, 12:00:00 a.m. (0h 43m elapsed, 4h 17m remaining)"
     try:
+        # Extract date
+        date_match = re.search(r'(\d{4})-(\d{2})-(\d{2})', block_start_str)
+        date_str = None
+        if date_match:
+            year = date_match.group(1)
+            month = date_match.group(2)
+            day = date_match.group(3)
+            date_str = f"{year}-{month}-{day}"
+
         # Extract start time
         time_match = re.search(r'(\d{1,2}):(\d{2}):(\d{2})\s+(a\.m\.|p\.m\.)', block_start_str)
         if not time_match:
@@ -41,8 +50,8 @@ def parse_time_info(block_start_str):
         # Calculate end time (start + 5 hours for Claude's 5-hour block)
         end_hour_24 = (hour_24 + 5) % 24
 
-        # Format times
-        start_time = f"{hour}:{minute} {period.replace('.', '').upper()}"
+        # Format times with date
+        start_time = f"{date_str} {hour}:{minute} {period.replace('.', '').upper()}" if date_str else f"{hour}:{minute} {period.replace('.', '').upper()}"
 
         # Format end time
         end_hour = end_hour_24 if end_hour_24 <= 12 else end_hour_24 - 12
@@ -169,13 +178,13 @@ def format_statusline(data):
     usage_indicator = get_usage_indicator(percentage)
 
     if time_info:
-        # Format: 시작 ~ 종료 | Elapsed 시간 | Remaining 시간 | 토큰 (%) 🟢 | 달러
-        return (f"{time_info['start_time']} ~ {time_info['end_time']} | "
+        # Format: 🟢  날짜 시작 ~ 종료 | Elapsed 시간 | Remaining 시간 | 토큰 (%) | 달러
+        return (f"Session Block {usage_indicator}  {time_info['start_time']} ~ {time_info['end_time']} | "
                 f"⏱️ {time_info['elapsed']} | ⏳ {time_info['remaining']} | "
-                f"🔥 {data['tokens']} tokens ({percentage}) {usage_indicator} | 💰 {data['cost']}")
+                f"🔥 {data['tokens']} tokens ({percentage}) | 💰 {data['cost']}")
     else:
         # Fallback format if time info is not available
-        return f"🔥 {data['tokens']} tokens ({percentage}) {usage_indicator} | 💰 {data['cost']}"
+        return f"{usage_indicator}  🔥 {data['tokens']} tokens ({percentage}) | 💰 {data['cost']}"
 
 if __name__ == "__main__":
     data = parse_active_block()

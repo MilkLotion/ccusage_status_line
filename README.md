@@ -40,7 +40,7 @@ cp statusline.py ~/.claude/
 
 ## Configuration / 설정
 
-Add to your Claude Code settings file (`~/.claude/settings.json`):
+Claude Code settings 파일에 추가 (`~/.claude/settings.json`):
 
 ### Windows
 
